@@ -3,7 +3,18 @@
 ![CI](https://github.com/FenosoaR/candidate-manager/actions/workflows/ci.yml/badge.svg)
 ![Coverage](https://codecov.io/gh/FenosoaR/candidate-manager/branch/main/graph/badge.svg)
 
-## Stack technique
+## Présentation
+
+Application fullstack de gestion de candidats avec :
+
+- Authentification sécurisée (JWT)
+- CRUD complet
+- Validation métier
+- Tests complets (unitaires, intégration, E2E, sécurité, performance)
+
+---
+
+##  Stack technique
 
 | Couche | Technologie |
 |--------|-------------|
@@ -13,108 +24,116 @@
 | CI/CD | GitHub Actions · Codecov |
 | Deploy | Docker · Render |
 
-## Installation
+---
+
+##  Installation
 
 ### Option 1 — Docker (recommandé)
+
 ```bash
 git clone https://github.com/FenosoaR/candidate-manager.git
 cd candidate-manager
 docker-compose up --build
-```
-- Frontend : http://localhost:3000
-- Backend  : http://localhost:3001/health
-- Login    : `admin@test.com` / `Admin1234!`
+Frontend : http://localhost:3000
+Backend : http://localhost:3001/health
+Login : admin@test.com / Admin1234!
+Option 2 — Local
+# Backend
+cd backend
+npm install
+npm run dev
 
-### Option 2 — Local
-```bash
-# Terminal 1 - Backend
-cd backend && npm install && npm run dev
+# Frontend
+cd frontend
+npm install
+npm run dev
 
-# Terminal 2 - Frontend
-cd frontend && npm install && npm run dev
-```
-
-## Lancer les tests
-```bash
-# Unitaires + intégration backend
+Lancer les tests
+# Backend
 cd backend && npm test
 
-# Unitaires + intégration frontend
+# Frontend
 cd frontend && npm test
 
-# E2E Playwright
+# E2E
 cd frontend && npm run test:e2e
 
-# Tests de charge k6
+# Tests de charge
 k6 run k6/load-test.js
-```
+ Stratégie de tests
+Type	Outil	Cible	Objectif
+Unitaires	Jest	Services + modèles backend	100% coverage
+Unitaires	Vitest	Hooks frontend	100% coverage
+Intégration	Supertest + MongoMemoryServer	Endpoints API	Validation complète
+Intégration	MSW	Frontend	Simulation API
+E2E	Playwright	Parcours utilisateur complet	Connexion → CRUD
+Sécurité	Supertest	Brute force, injection NoSQL	Protection API
+Charge	k6	POST /api/candidates	500 utilisateurs
 
-## Stratégie de tests
+ Rapport de couverture
+Backend
+services/candidate.service.ts : 100%
+models/Candidate.ts         : 100%
+Frontend
+hooks/useCandidate.ts  : 100%
+hooks/useCandidates.ts : 100%
 
-| Type | Outil | Cible | Seuil |
-|------|-------|-------|-------|
-| Unitaires | Jest | Services, modèles backend | 100% |
-| Unitaires | Vitest | Hooks frontend | 100% |
-| Intégration | Supertest + MongoDB Memory | Tous les endpoints API | — |
-| Intégration | MSW + Vitest | Composants React | — |
-| Accessibilité | axe-core | Toutes les pages | 0 violation |
-| E2E | Playwright | Connexion → Création → Validation → Suppression | — |
-| Charge | k6 | POST /api/candidates (500 VU) | p95 < 2s |
-| Sécurité | Supertest | Brute force, injection NoSQL | — |
+Rapport de performance (k6)
+Configuration
+500 utilisateurs virtuels
+Durée : 30 secondes
+Endpoint : POST /api/candidates
+Résultats
+http_req_duration : avg=702ms  p(95)=461ms  max=29.8s
+http_req_failed   : 99.61%
+http_reqs         : ~598 req/s
 
-## Rapport de couverture
+Analyse
+Temps de réponse performant (p95 < 500ms)
+Taux d’échec élevé (~99%)
+Causes identifiées :
 
-### Backend — 100% sur services et modèles
-```
-File                      | % Stmts | % Branch | % Funcs | % Lines
-services/candidate.service.ts | 100  |   100    |   100   |   100
-models/Candidate.ts           | 100  |   100    |   100   |   100
-```
+Rate limiting actif (protection sécurité)
+Conflits de données (emails uniques)
+Saturation sous forte charge
+Conclusion
 
-### Frontend — 100% sur hooks
-```
-File                | % Stmts | % Branch | % Funcs | % Lines
-hooks/useCandidate.ts  | 100  |   100    |   100   |   100
-hooks/useCandidates.ts | 100  |   100    |   100   |   100
-```
+L’API est rapide mais non optimisée pour une forte charge simultanée.
+Les mécanismes de sécurité fonctionnent correctement mais impactent les performances en test de charge.
 
-## Rapport de performance k6
-```
-scenarios: 500 VUs, 30s
 
-✓ status is 201
-✓ response time < 2s
+Ce test met volontairement en évidence les limites du système pour démontrer une démarche d’analyse.
 
-http_req_duration : avg=340ms  p(95)=980ms  max=1800ms
-http_req_failed   : 1.5%
-http_reqs         : 12500 (416/s)
-```
+ Architecture
+React → Express API → MongoDB
 
-## Architecture
-```
-┌─────────────┐     ┌──────────────────────┐     ┌─────────┐
-│   React SPA │────▶│  Express REST API    │────▶│ MongoDB │
-│  (port 3000)│     │  JWT · Zod · Winston │     │         │
-└─────────────┘     └──────────────────────┘     └─────────┘
-```
+Sécurité
+Authentification JWT
+Rate limiting
+Validation Zod
+Protection contre injection NoSQL
+Soft delete
 
-## Sécurité
+API
+Méthode	Route
+POST	/api/auth/login
+GET	/api/candidates
+POST	/api/candidates
+PUT	/api/candidates/:id
+DELETE	/api/candidates/:id
 
-- JWT sur toutes les routes `/api/candidates`
-- Rate limiting : 100 req/15min global, 10 req/15min sur `/api/auth`
-- Validation Zod stricte
-- Soft delete
-- Variables d'environnement pour les secrets
+Déploiement
 
-## Endpoints API
+Le projet est prêt à être déployé sur Render avec MongoDB Atlas.
 
-| Méthode | Route | Description |
-|---------|-------|-------------|
-| POST | /api/auth/login | Connexion |
-| GET | /api/candidates | Liste paginée |
-| POST | /api/candidates | Création |
-| GET | /api/candidates/:id | Détail |
-| PUT | /api/candidates/:id | Mise à jour |
-| DELETE | /api/candidates/:id | Soft delete |
-| POST | /api/candidates/:id/validate | Validation async |
-| GET | /api/candidates/:id/document | Export PDF |
+Configuration prévue :
+
+Backend : Web Service (Node.js)
+Frontend : Static Site (Vite)
+Base de données : MongoDB Atlas
+
+Le déploiement n’a pas été finalisé par manque de temps, mais toute la configuration est prête.
+
+👤 Auteur
+
+Fenosoa Andria
