@@ -1,0 +1,32 @@
+{
+  "name": "candidate-manager",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FenosoaR/candidate-manager.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/FenosoaR/candidate-manager/issues"
+  },
+  "homepage": "https://github.com/FenosoaR/candidate-manager#readme",
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0"
+  },
+
+    "lint-staged": {
+      "backend/src/**/*.ts": ["eslint --fix", "tsc --noEmit -p backend/tsconfig.json"],
+      "frontend/src/**/*.{ts,tsx}": ["eslint --fix", "tsc --noEmit -p frontend/tsconfig.json"]
+    }
+
+}
