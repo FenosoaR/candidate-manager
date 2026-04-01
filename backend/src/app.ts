@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors'
 import rateLimit from 'express-rate-limit';
 import candidateRoutes from './routes/candidate.routes';
 import authRoutes from './routes/auth.routes';
@@ -8,6 +9,12 @@ import { connectDB } from './config/database';
 const app = express();
 
 app.use(express.json());
+
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://localhost:5173'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}))
 
 // Rate limiting
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100, message: { error: 'Trop de requêtes' } });
