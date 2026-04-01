@@ -1,7 +1,10 @@
 # Candidate Manager
 
-![CI](https://github.com/FenosoaR/candidate-manager/actions/workflows/ci.yml/badge.svg)
-![Coverage](https://codecov.io/gh/FenosoaR/candidate-manager/branch/main/graph/badge.svg)
+## CI / Coverage
+
+- Tests exécutés via GitHub Actions
+- Couverture : 100% sur services et modèles backend
+
 
 ## Présentation
 
