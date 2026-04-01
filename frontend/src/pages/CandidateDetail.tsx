@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import api from '../services/api';
 import { useCandidate } from '../hooks/useCandidate';
 import { Candidate } from '../types/candidate';
@@ -8,6 +8,8 @@ export const CandidateDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [candidate, setCandidate] = useState<Candidate | null>(null);
   const { validateCandidate, loading, error } = useCandidate();
+
+  const navigate =  useNavigate();
 
   useEffect(() => {
     api.get<Candidate>(`/api/candidates/${id}`).then(r => setCandidate(r.data));
@@ -31,6 +33,18 @@ export const CandidateDetail: React.FC = () => {
       <button onClick={handleValidate} disabled={loading || candidate.status === 'validated'} aria-busy={loading}>
         {loading ? 'Validation en cours…' : 'Valider le candidat'}
       </button>
+
+  <button onClick={() => navigate(`/candidates/${id}/edit`)}>
+  Modifier
+</button>
+
+<a 
+  href={`/api/candidates/${id}/document`} 
+  target="_blank"
+  rel="noreferrer"
+>
+  <button>Télécharger PDF</button>
+</a>
     </main>
   );
 };

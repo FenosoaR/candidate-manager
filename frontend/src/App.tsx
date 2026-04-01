@@ -4,6 +4,7 @@ import { Login } from './pages/Login';
 import { CandidateList } from './pages/CandidateList';
 import { CandidateForm } from './pages/CandidateForm';
 import { CandidateDetail } from './pages/CandidateDetail';
+import { CandidateEdit } from './pages/CandidateEdit';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   localStorage.getItem('token') ? <>{children}</> : <Navigate to="/login" />;
@@ -15,6 +16,7 @@ const App: React.FC = () => (
       <Route path="/candidates" element={<PrivateRoute><CandidateList /></PrivateRoute>} />
       <Route path="/candidates/new" element={<PrivateRoute><CandidateForm /></PrivateRoute>} />
       <Route path="/candidates/:id" element={<PrivateRoute><CandidateDetail /></PrivateRoute>} />
+      <Route path="/candidates/:id/edit" element={<PrivateRoute><CandidateEdit /></PrivateRoute>} />
       <Route path="*" element={<Navigate to="/candidates" />} />
     </Routes>
   </BrowserRouter>
